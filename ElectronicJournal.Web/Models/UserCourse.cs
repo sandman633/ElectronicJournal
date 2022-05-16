@@ -8,7 +8,7 @@ namespace ElectronicJournal.Web.Models
         public Course Course { get; set; }
         public Guid UserId { get; set; }
         public User User { get; set; }
-        public Guid StatusId { get; set; }
+        public int StatusId { get; set; }
         public CourseStatus Status { get; set; }
 
     }

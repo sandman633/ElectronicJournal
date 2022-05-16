@@ -9,13 +9,13 @@ namespace ElectronicJournal.Web.Models
 
         public string Description { get; set; }
 
-        public CourseType Type { get; set; }
-
         public DateTime Created { get; set; }
 
         public DateTime? Updated { get; set; }
 
-        public Guid TypeId { get; set; }
+        public CourseType Type { get; set; }
+
+        public int TypeId { get; set; }
 
         public User Teacher { get; set; } 
 

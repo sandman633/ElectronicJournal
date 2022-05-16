@@ -1,7 +1,10 @@
 ﻿using ElectronicJournal.Web.Models;
+using ElectronicJournal.Web.Repositories.Interfaces;
 using ElectronicJournal.Web.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ElectronicJournal.Web.Controllers
@@ -10,11 +13,15 @@ namespace ElectronicJournal.Web.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IUserGroupRepository _userGroupRepository;
+        private readonly IGroupRepository _groupRepository;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager,IUserGroupRepository userGroupRepository,IGroupRepository groupRepository )
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _userGroupRepository = userGroupRepository;
+            _groupRepository = groupRepository;
         }
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
@@ -28,10 +35,17 @@ namespace ElectronicJournal.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
                 var result =
-                    await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                    await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
                 if (result.Succeeded)
                 {
+                    
+                    var claims = await GetUserClaimsAsync(user);
+                    
+
+                    await _signInManager.SignInWithClaimsAsync(user, model.RememberMe, claims);
                     // проверяем, принадлежит ли URL приложению
                     if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                     {
@@ -41,6 +55,7 @@ namespace ElectronicJournal.Web.Controllers
                     {
                         return RedirectToAction("Index", "Home");
                     }
+
                 }
                 else
                 {
@@ -48,6 +63,21 @@ namespace ElectronicJournal.Web.Controllers
                 }
             }
             return View(model);
+        }
+
+        private async Task<List<Claim>> GetUserClaimsAsync(User user)
+        {
+            List<Claim> claims = new List<Claim>();
+
+            var usergroups = await _userGroupRepository.GetByCriteriaAsync(e => e.UserId == user.Id);
+
+            foreach (var usergroup in usergroups)
+            {
+                claims.Add(new Claim("Group", usergroup.Group.Name));
+                claims.Add(new Claim("Group", usergroup.Group.Name + "1"));
+            }
+            claims.Add(new Claim("Id", user.Id.ToString()));
+            return claims;
         }
 
         [HttpPost]

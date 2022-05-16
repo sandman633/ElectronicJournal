@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ElectronicJournal.Web.Repositories.Config;
+
 
 namespace ElectronicJournal.Web
 {
@@ -28,12 +30,13 @@ namespace ElectronicJournal.Web
                 config.Password.RequireNonAlphanumeric = false;
                 config.Password.RequireUppercase = false;
             });
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddRazorPages();
+            services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             
             services.AddIdentity<User, IdentityRole<Guid>>()
                         .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.RepositoryConfiguration();
 
             services.ConfigureApplicationCookie(options =>
             {

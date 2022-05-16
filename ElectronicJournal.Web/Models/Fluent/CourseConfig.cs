@@ -26,12 +26,6 @@ namespace ElectronicJournal.Web.Models.Fluent
                 .HasForeignKey(x=>x.TeacherId)
                 .IsRequired(false);
 
-            builder.HasOne(x => x.Type)
-                .WithMany()
-                .HasForeignKey(x => x.TypeId);
-
         }
     }
-
-
 }

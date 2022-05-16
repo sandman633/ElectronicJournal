@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ElectronicJournal.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220508160810_init")]
-    partial class init
+    [Migration("20220515232103_added requestType")]
+    partial class addedrequestType
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -41,8 +41,8 @@ namespace ElectronicJournal.Web.Migrations
                     b.Property<Guid?>("TeacherId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("TypeId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("TypeId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("Updated")
                         .HasColumnType("datetime2");
@@ -82,6 +82,9 @@ namespace ElectronicJournal.Web.Migrations
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("TypeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("Updated")
                         .HasColumnType("datetime2");
 
@@ -91,6 +94,8 @@ namespace ElectronicJournal.Web.Migrations
 
                     b.HasIndex("SenderId");
 
+                    b.HasIndex("TypeId");
+
                     b.ToTable("CourseRequests");
                 });
 
@@ -99,6 +104,9 @@ namespace ElectronicJournal.Web.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
 
                     b.Property<string>("StatusName")
                         .IsRequired()
@@ -117,6 +125,9 @@ namespace ElectronicJournal.Web.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TypeId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -188,6 +199,9 @@ namespace ElectronicJournal.Web.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<Guid?>("PrincipalId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -208,6 +222,8 @@ namespace ElectronicJournal.Web.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("PrincipalId");
+
                     b.ToTable("AspNetUsers");
                 });
 
@@ -220,8 +236,8 @@ namespace ElectronicJournal.Web.Migrations
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("StatusId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -394,8 +410,9 @@ namespace ElectronicJournal.Web.Migrations
                         .HasForeignKey("TeacherId");
 
                     b.HasOne("ElectronicJournal.Web.Models.CourseType", "Type")
-                        .WithMany()
+                        .WithMany("Courses")
                         .HasForeignKey("TypeId")
+                        .HasPrincipalKey("TypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -418,9 +435,27 @@ namespace ElectronicJournal.Web.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("ElectronicJournal.Web.Models.CourseType", "Type")
+                        .WithMany("CourseRequests")
+                        .HasForeignKey("TypeId")
+                        .HasPrincipalKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Principal");
 
                     b.Navigation("Sender");
+
+                    b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("ElectronicJournal.Web.Models.User", b =>
+                {
+                    b.HasOne("ElectronicJournal.Web.Models.User", "Principal")
+                        .WithMany()
+                        .HasForeignKey("PrincipalId");
+
+                    b.Navigation("Principal");
                 });
 
             modelBuilder.Entity("ElectronicJournal.Web.Models.UserCourse", b =>
@@ -434,6 +469,7 @@ namespace ElectronicJournal.Web.Migrations
                     b.HasOne("ElectronicJournal.Web.Models.CourseStatus", "Status")
                         .WithMany("UserCourses")
                         .HasForeignKey("StatusId")
+                        .HasPrincipalKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -528,6 +564,13 @@ namespace ElectronicJournal.Web.Migrations
             modelBuilder.Entity("ElectronicJournal.Web.Models.CourseStatus", b =>
                 {
                     b.Navigation("UserCourses");
+                });
+
+            modelBuilder.Entity("ElectronicJournal.Web.Models.CourseType", b =>
+                {
+                    b.Navigation("CourseRequests");
+
+                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("ElectronicJournal.Web.Models.Group", b =>

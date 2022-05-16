@@ -5,6 +5,7 @@ namespace ElectronicJournal.Web.Models
 {
     public class CourseStatus : BaseEntity
     {
+        public int StatusId { get; set; }
 
         public string StatusName { get; set; }
 

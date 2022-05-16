@@ -12,12 +12,6 @@ namespace ElectronicJournal.Web.Models.Fluent
             builder.Property(x => x.Reason)
                 .IsRequired();
 
-            builder.Property(x => x.Description)
-                .IsRequired();
-
-            builder.Property(x => x.Price)
-                .IsRequired(false);
-
             builder.Property(x => x.Created)
                 .IsRequired();
 

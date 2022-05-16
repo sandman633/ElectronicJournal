@@ -31,6 +31,8 @@ namespace ElectronicJournal.Web.Repositories
         public virtual async Task<TModel> CreateAsync(TModel model)
         {
             await DbSet.AddAsync(model);
+            _context.SaveChanges();
+
             return await GetByIdAsync(model.Id);
         }
 
@@ -43,6 +45,10 @@ namespace ElectronicJournal.Web.Repositories
         {
             var entities = await DbSet.Where(x => ids.Contains(x.Id)).ToListAsync();
             DbSet.RemoveRange(entities);
+
+            _context.SaveChanges();
+
+
         }
 
         /// <summary>
@@ -51,7 +57,8 @@ namespace ElectronicJournal.Web.Repositories
         /// <returns>model collection.</returns>
         public virtual async Task<IEnumerable<TModel>> GetAsync()
         {
-            var entity = await DbSet.AsNoTracking().ToListAsync();
+            var entity = await DefaultIncludeProperties(DbSet).AsNoTracking().ToListAsync();
+
             return entity;
         }
 
@@ -64,6 +71,7 @@ namespace ElectronicJournal.Web.Repositories
             IQueryable<TModel> entities = DefaultIncludeProperties(DbSet).AsNoTracking();
             if (filter != null)
                 entities = entities.Where(filter);
+
             return entities;
         }
 
@@ -72,11 +80,12 @@ namespace ElectronicJournal.Web.Repositories
         /// </summary>
         /// <param name="id">Identifier.</param>
         /// <returns>model.</returns>
-        public virtual async Task<TModel> GetByIdAsync(Guid id)
+        public virtual async Task<TModel> GetByIdAsync(Guid? id)
         {
             var entities = await DefaultIncludeProperties(DbSet)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
+
             return entities;
         }
 
@@ -90,6 +99,9 @@ namespace ElectronicJournal.Web.Repositories
             DbSet.Update(model);
 
             var newEntity = await GetByIdAsync(model.Id);
+
+            _context.SaveChanges();
+
             return newEntity;
         }
         /// <summary>
@@ -98,5 +110,7 @@ namespace ElectronicJournal.Web.Repositories
         /// <param name="dbSet">DbSet.</param>
         /// <returns>DbSet.</returns>
         protected virtual IQueryable<TModel> DefaultIncludeProperties(DbSet<TModel> dbSet) => dbSet;
+
+
     }
 }

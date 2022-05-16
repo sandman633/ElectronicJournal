@@ -11,7 +11,7 @@ namespace ElectronicJournal.Web.Models
 
         public Guid? PrincipalId { get; set; }
 
-        public Principal Principal { get; set; }
+        public User Principal { get; set; }
         public ICollection<UserGroup> UserGroups { get; set; }
 
         public ICollection<UserCourse> UserCourses { get; set; }

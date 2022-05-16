@@ -27,6 +27,7 @@ namespace ElectronicJournal.Web.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PrincipalId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -45,6 +46,12 @@ namespace ElectronicJournal.Web.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_AspNetUsers_PrincipalId",
+                        column: x => x.PrincipalId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,11 +59,13 @@ namespace ElectronicJournal.Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StatusId = table.Column<int>(type: "int", nullable: false),
                     StatusName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CourseStatuses", x => x.Id);
+                    table.UniqueConstraint("AK_CourseStatuses_StatusId", x => x.StatusId);
                 });
 
             migrationBuilder.CreateTable(
@@ -64,11 +73,13 @@ namespace ElectronicJournal.Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CourseTypes", x => x.Id);
+                    table.UniqueConstraint("AK_CourseTypes_TypeId", x => x.TypeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -227,7 +238,7 @@ namespace ElectronicJournal.Web.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Updated = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TypeId = table.Column<int>(type: "int", nullable: false),
                     TeacherId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -243,8 +254,8 @@ namespace ElectronicJournal.Web.Migrations
                         name: "FK_Courses_CourseTypes_TypeId",
                         column: x => x.TypeId,
                         principalTable: "CourseTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "TypeId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -279,7 +290,7 @@ namespace ElectronicJournal.Web.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    StatusId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    StatusId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -300,8 +311,8 @@ namespace ElectronicJournal.Web.Migrations
                         name: "FK_UserCourses_CourseStatuses_StatusId",
                         column: x => x.StatusId,
                         principalTable: "CourseStatuses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "StatusId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -335,6 +346,11 @@ namespace ElectronicJournal.Web.Migrations
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_PrincipalId",
+                table: "AspNetUsers",
+                column: "PrincipalId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",

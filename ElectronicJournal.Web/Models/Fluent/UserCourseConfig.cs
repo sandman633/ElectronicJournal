@@ -19,7 +19,8 @@ namespace ElectronicJournal.Web.Models.Fluent
 
             builder.HasOne(e => e.Status)
                 .WithMany(e=>e.UserCourses)
-                .HasForeignKey(e=>e.StatusId);
+                .HasForeignKey(e=>e.StatusId)
+                .HasPrincipalKey(e=>e.StatusId);
         }
     }
 }

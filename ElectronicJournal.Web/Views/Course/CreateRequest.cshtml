@@ -1,0 +1,60 @@
+﻿@model ElectronicJournal.Web.Models.CourseRequest
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Course</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateRequest">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+               
+                @*<input type="hidden" class="CountryId"/>*@
+                <select class="Courses" asp-for="CourseId" asp-items="@ViewBag.Courses">
+                
+                </select>
+
+
+
+                <label asp-for="Reason" class="control-label"></label>
+                <textarea asp-for="Reason" class="form-control">
+
+                </textarea>
+                <span asp-validation-for="Reason" class="text-danger"></span>
+                <input name="courseType" type="radio" value="1" />
+                <span>Внешний</span> <br />
+                <input checked="checked" name="courseType" type="radio" value="2" />
+                <span>Внутренний</span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+
+@section Scripts {
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+    <link rel="stylesheet” href="https://cdn. jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css” />
+<script type="text/javascript" src="https://aiax.googleapis.com/ajax/1ibs/jquery/1.8.3/iquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+<script type="text/javascript">
+    $(function (){
+        $("#Courses").select2();
+    })
+</script>
+}
+}

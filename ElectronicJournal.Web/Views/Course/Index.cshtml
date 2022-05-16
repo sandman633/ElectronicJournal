@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ElectronicJournal.Web.Models.Course>
+﻿@model ElectronicJournal.Web.ViewModels.ListCoursesViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -7,27 +7,38 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    @if (User.IsInRole("Liner"))
+    {
+        <a asp-action="Create">Создать курс</a>
+    }
+    else
+    {
+        <a asp-action="CreateRequest">Создать заявку</a>
+    }
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Course
+            </th>
+            <th>
+                Type
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Courses) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @Html.DisplayFor(modelItem => item.Type.Name)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
             </td>
         </tr>
 }

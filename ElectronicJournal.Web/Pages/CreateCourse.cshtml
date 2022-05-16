@@ -1,0 +1,12 @@
+﻿@page
+@model ElectronicJournal.Web.Pages.CreateCourseModel
+@{
+}
+
+
+<form asp-page-handler="AddUser" method="post">
+    <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+    <button type="submit" class="btn small btn-danger">
+        Remove
+    </button>
+</form>
