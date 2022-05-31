@@ -4,9 +4,32 @@
 }
 
 
-<form asp-page-handler="AddUser" method="post">
-    <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
-    <button type="submit" class="btn small btn-danger">
-        Remove
-    </button>
+<form asp-action="Create" asp>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <div class="form-group">
+            <input hidden asp-for="CourseRequest.Id" class="control-label" />
+        </div>
+        <div class="form-group">
+            <label asp-for="CourseRequest.Name"></label><br />
+            <input asp-for="CourseRequest.Name" />
+            <span asp-validation-for="CourseRequest.Name"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="CourseRequest.Description"></label><br />
+            <textarea asp-for="CourseRequest.Description">
+
+            </textarea>
+            <span asp-validation-for="CourseRequest.Description"></span>
+        </div>
+        <div class="form-check">
+            <input name="courseType" type="radio" value="1" />
+            <span>Внешний</span> <br />
+            <input checked="checked" name="courseType" type="radio" value="2" />
+            <span>Внутренний</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Создать" class="btn btn-primary" />
+    </div>
 </form>

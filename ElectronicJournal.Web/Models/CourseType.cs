@@ -8,6 +8,5 @@ namespace ElectronicJournal.Web.Models
         public string Name { get; set; }
         public int TypeId { get;  set; }
         public ICollection<Course> Courses { get;  set; }
-        public ICollection<CourseRequest> CourseRequests { get;  set; }
     }
 }

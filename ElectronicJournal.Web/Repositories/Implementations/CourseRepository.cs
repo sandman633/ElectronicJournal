@@ -13,7 +13,7 @@ namespace ElectronicJournal.Web.Repositories.Implementations
 
         protected override IQueryable<Course> DefaultIncludeProperties(DbSet<Course> dbSet)
         {
-            return dbSet.Include(e=>e.Type).Include(e=>e.Teacher).Include(e=>e.UserCourses);
+            return dbSet.Include(e => e.Type).Include(e => e.Teacher).Include(e => e.UserCourses).ThenInclude(e=>e.Status).Include(e => e.UserCourses).ThenInclude(e => e.User);
         }
     }
 }

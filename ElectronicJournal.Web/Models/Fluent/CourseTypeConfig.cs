@@ -15,9 +15,6 @@ namespace ElectronicJournal.Web.Models.Fluent
                 .WithOne(e => e.Type)
                 .HasForeignKey(e => e.TypeId).HasPrincipalKey(e => e.TypeId);
 
-            builder.HasMany(e => e.CourseRequests)
-                .WithOne(e => e.Type)
-                .HasForeignKey(e => e.TypeId).HasPrincipalKey(e => e.TypeId);
         }
     }
 }

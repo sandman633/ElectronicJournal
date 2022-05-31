@@ -4,8 +4,6 @@ namespace ElectronicJournal.Web.ViewModels
 {
     public class CourseRequestViewModel
     {
-        public CourseRequest Model { get; set; }
-
-
+        public CourseRequest Request { get; set; }
     }
 }

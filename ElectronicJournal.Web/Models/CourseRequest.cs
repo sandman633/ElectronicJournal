@@ -7,6 +7,7 @@ namespace ElectronicJournal.Web.Models
         public string Reason { get; set; }
         
         public string Comment { get; set; }
+
         public Course Course { get; set; }
 
         public Guid CourseId { get; set; }
@@ -23,9 +24,6 @@ namespace ElectronicJournal.Web.Models
 
         public Guid SenderId { get; set; }
 
-        public CourseType Type { get; set; }
-
-        public int TypeId { get; set; }
         public RequestStatus RequestStatus { get; set; }
 
         public int RequestStatusId { get; set; }

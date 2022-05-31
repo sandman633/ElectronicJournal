@@ -8,13 +8,13 @@ namespace ElectronicJournal.Web.Repositories.Config
     {
         public static void RepositoryConfiguration(this IServiceCollection services)
         {
-            services.AddTransient<ICourseRepository, CourseRepository>();
-            services.AddTransient<ICourseRequestRepository, CourseRequestRepository>();
-            services.AddTransient<ICourseStatusRepository, CourseStatusRepository>();
-            services.AddTransient<ICourseTypeRepository, CourseTypeRepository>();
-            services.AddTransient<IGroupRepository, GroupRepository>();
-            services.AddTransient<IUserGroupRepository, UserGroupRepository>();
-            services.AddTransient<IUserCourseRepository, UserCourseRepository>();
+            services.AddScoped<ICourseRepository, CourseRepository>();
+            services.AddScoped<ICourseRequestRepository, CourseRequestRepository>();
+            services.AddScoped<ICourseStatusRepository, CourseStatusRepository>();
+            services.AddScoped<ICourseTypeRepository, CourseTypeRepository>();
+            services.AddScoped<IGroupRepository, GroupRepository>();
+            services.AddScoped<IUserGroupRepository, UserGroupRepository>();
+            services.AddScoped<IUserCourseRepository, UserCourseRepository>();
         }
     }
 }

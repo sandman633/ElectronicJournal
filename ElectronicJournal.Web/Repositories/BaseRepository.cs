@@ -43,12 +43,13 @@ namespace ElectronicJournal.Web.Repositories
         /// <returns>A task that represents an asynchronous operation.</returns>
         public virtual async Task DeleteAsync(params Guid[] ids)
         {
-            var entities = await DbSet.Where(x => ids.Contains(x.Id)).ToListAsync();
-            DbSet.RemoveRange(entities);
+            using (_context)
+            {
+                var entities = await DbSet.Where(x => ids.Contains(x.Id)).ToListAsync();
+                DbSet.RemoveRange(entities);
 
-            _context.SaveChanges();
-
-
+                _context.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -97,10 +98,10 @@ namespace ElectronicJournal.Web.Repositories
         public virtual async Task<TModel> UpdateAsync(TModel model)
         {
             DbSet.Update(model);
+            _context.SaveChanges();
 
             var newEntity = await GetByIdAsync(model.Id);
 
-            _context.SaveChanges();
 
             return newEntity;
         }

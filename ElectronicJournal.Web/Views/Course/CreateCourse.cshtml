@@ -1,50 +1,46 @@
-﻿@model ElectronicJournal.Web.ViewModels.CourseRequestCreateViewModel
+﻿@model ElectronicJournal.Web.ViewModels.CourseCreateViewModel
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h1>Создание заявки</h1>
+<h1>Создание</h1>
 
+<h4>Курс</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="CreateRequest">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <div class="row">
-                    <div class="form-group сol-sm">
-                        <label asp-for="CourseId" class="control-label">Курс</label>
-                        <select asp-for="CourseId" class="form-control" asp-items="@ViewBag.Courses"></select>
-                    </div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label><br />
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name"></span>
                 </div>
-                <div class="row">
-                    <div class="form-group сol-sm">
-                    <label asp-for="Reason" class="control-label"></label>
-                    <textarea asp-for="Reason" class="form-control">
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label" ></label><br />
+                    <textarea asp-for="Description" class="form-control" class="form-control">
 
                     </textarea>
-                    <span asp-validation-for="Reason" class="text-danger"></span>
-                    </div>
+                    <span asp-validation-for="Description"></span>
                 </div>
-                <div class="form-group сol-sm">
-                </div>
-                @*                <div class="form-check">
+                <div class="form-check">
                     <input name="courseType" type="radio" value="1" />
                     <span>Внешний</span> <br />
                     <input checked="checked" name="courseType" type="radio" value="2" />
                     <span>Внутренний</span>
-                    </div>*@
+                </div>
             </div>
             <div class="form-group">
-                <input type="submit" value="Создать заявку" class="btn btn-primary" />
+                <input type="submit" value="Создать" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="RequestList">Обратно к заявкам</a>
+    <a asp-action="Index">Обратно к курсам</a>
 </div>
 
 

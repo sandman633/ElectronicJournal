@@ -18,7 +18,7 @@ namespace ElectronicJournal.Web.Controllers
         private readonly IUserCourseRepository _userCourseRepo;
         private readonly ICourseRequestRepository _courseRequestRepo;
         private readonly UserManager<User> _userManager;
-        public CourseController(ICourseRepository courseRepo, IUserCourseRepository courseTypeRepo,ICourseRequestRepository courseRequestRepo, UserManager<User> userManager)
+        public CourseController(ICourseRepository courseRepo, IUserCourseRepository courseTypeRepo, ICourseRequestRepository courseRequestRepo, UserManager<User> userManager)
         {
             _repo = courseRepo;
             _userCourseRepo = courseTypeRepo;
@@ -26,21 +26,21 @@ namespace ElectronicJournal.Web.Controllers
             _courseRequestRepo = courseRequestRepo;
         }
 
-        // GET: Course
-        public async Task<IActionResult> Index(int currentPage=1,int pageSize=10, string filter = null)
+
+        public async Task<IActionResult> Index(bool showAll, int currentPage = 1, int pageSize = 10, string filter = null)
         {
             IEnumerable<Course> courses;
-
-            if (User.IsInRole("Liner"))
+            var userClaim = User.Claims.Where(e => e.Type == "Id").First();
+            Guid userId = new Guid(userClaim.Value);
+            if (showAll)
             {
                 courses = await _repo.GetAsync();
             }
             else
             {
-                var userClaim = User.Claims.Where(e => e.Type == "Id").First();
-                Guid userId = new Guid(userClaim.Value);
+                
 
-                courses = await _repo.GetByCriteriaAsync(e => e.UserCourses.Select(x=>x.UserId).Contains(userId));
+                courses = await _repo.GetByCriteriaAsync(e => e.UserCourses.Select(x => x.UserId).Contains(userId));
 
             }
             ListCoursesViewModel model = new ListCoursesViewModel()
@@ -54,6 +54,8 @@ namespace ElectronicJournal.Web.Controllers
                 .Skip((currentPage - 1) * pageSize)
                 .Take(pageSize),
                 NameFilter = filter,
+                ShowAll = showAll,
+                UserId = userId,
                 PagingInfo = new PagingInfo()
                 {
                     ItemsPerPage = pageSize,
@@ -64,7 +66,6 @@ namespace ElectronicJournal.Web.Controllers
             return View(model);
         }
 
-        // GET: Course/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -72,46 +73,114 @@ namespace ElectronicJournal.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _repo.GetByIdAsync(id);
+            var course = await _courseRequestRepo.GetByIdAsync(id);
             if (course == null)
             {
                 return NotFound();
             }
 
-            return View(course);
+            return View(new CourseRequestViewModel { Request = course });
         }
 
-        public async Task<IActionResult> CreateRequestAsync()
+        public async Task<IActionResult> CreateCourse()
         {
-            var courses = await _repo.GetAsync();
-            ViewBag.CourseId = new SelectList(courses, "Id", "Name");
 
-            return View();
+            return View(new CourseCreateViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateRequest(CourseRequest courseRequest, string courseType)
+        public async Task<IActionResult> CreateCourse(CourseCreateViewModel courseRequest)
         {
-            var courses = await _repo.GetAsync();
-            ViewBag.CourseId = new SelectList(courses, "Id", "Name");
-
             if (ModelState.IsValid)
             {
-                await CreateNewRequest(courseRequest, courseType);
+                await CreateNewCourse(courseRequest);
 
                 return RedirectToAction(nameof(Index));
             }
             return View(courseRequest);
         }
 
-        private async Task CreateNewRequest(CourseRequest courseRequest, string courseType)
+        private async Task CreateNewCourse(CourseCreateViewModel model)
         {
             var userid = User.Claims.First().Value;
-
             var user = await _userManager.FindByIdAsync(userid);
 
+            var course = new Course();
+
+            course.Id = new Guid();
+
+            course.Description = model.Description;
+
+            course.Name = model.Name;
+
+            course.Created = DateTime.Now;
+
+            course.Updated = course.Created;
+
+
+            _repo.CreateAsync(course);
+        }
+
+
+        #region CourseRequest
+
+
+        public async Task<IActionResult> DetailsRequest(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var course = await _courseRequestRepo.GetByIdAsync(id);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            return View(new CourseRequestViewModel { Request = course });
+        }
+
+        public async Task<IActionResult> CreateRequestAsync()
+        {
+            var userClaim = User.Claims.Where(e => e.Type == "Id").First();
+            Guid userId = new Guid(userClaim.Value);
+
+            var courses = await _repo.GetByCriteriaAsync(e => !e.UserCourses.Select(x => x.UserId).Contains(userId));
+
+            ViewBag.Courses = new SelectList(courses, "Id", "Name").Select(e => e);
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateRequest(CourseRequestCreateViewModel courseRequest)
+        {
+
+
+            if (ModelState.IsValid)
+            {
+                await CreateNewRequest(courseRequest);
+
+                return RedirectToAction(nameof(RequestList));
+            }
+            return View(courseRequest);
+        }
+
+        private async Task CreateNewRequest(CourseRequestCreateViewModel model)
+        {
+            var userid = User.Claims.First().Value;
+            var user = await _userManager.FindByIdAsync(userid);
+
+            var courseRequest = new CourseRequest();
+
             courseRequest.Id = new Guid();
+
+            courseRequest.Reason = model.Reason;
+
+            courseRequest.CourseId = model.CourseId;
 
             courseRequest.PrincipalId = (Guid)user.PrincipalId;
 
@@ -119,12 +188,107 @@ namespace ElectronicJournal.Web.Controllers
 
             courseRequest.Created = DateTime.Now;
 
-            courseRequest.TypeId = Int32.Parse(courseType);
+            courseRequest.Updated = courseRequest.Created;
+
+            courseRequest.RequestStatusId = 1;
 
             _courseRequestRepo.CreateAsync(courseRequest);
         }
 
 
+        public async Task<IActionResult> RequestList(int currentPage = 1, int pageSize = 10, string filter = null)
+        {
+            IEnumerable<CourseRequest> courses;
+            var userClaim = User.Claims.Where(e => e.Type == "Id").First();
+            Guid userId = new Guid(userClaim.Value);
+
+            if (User.IsInRole("Liner"))
+            {
+                courses = await _courseRequestRepo.GetByCriteriaAsync(e => e.PrincipalId == userId);
+            }
+            else
+            {
+                courses = await _courseRequestRepo.GetByCriteriaAsync(e => e.SenderId == userId);
+            }
+            ListCourseRequestsViewModel model = new ListCourseRequestsViewModel()
+            {
+                Requests = courses
+                .OrderBy(p => p.Created)
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize),
+                PagingInfo = new PagingInfo()
+                {
+                    ItemsPerPage = pageSize,
+                    TotalItems = courses.Count(),
+                    CurrentPage = currentPage
+                }
+            };
+            return View(model);
+        }
+
+
+        // GET: Course/Edit/5
+        public async Task<IActionResult> EditRequest(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var course = await _courseRequestRepo.GetByIdAsync(id);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            int statusid;
+
+            if (course.RequestStatusId == 1)
+            {
+                statusid = 2;
+            }
+            else
+            {
+                statusid = course.RequestStatusId;
+            }
+            var model = new CourseRequestEditViewModel()
+            {
+                Id = course.Id,
+                Reason = course.Reason,
+                Comment = course?.Comment,
+                Created = course.Created,
+                RequestStatus = course.RequestStatus,
+                RequestStatusId = statusid,
+                CourseId = course.CourseId,
+                Course = course.Course,
+                Updated = (DateTime)course.Updated,
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditRequest(Guid? id, CourseRequestEditViewModel model, string action)
+        {
+            int reqstatus = Int32.Parse(action);
+
+            var request = await _courseRequestRepo.GetByIdAsync(id);
+
+            request.Comment = model?.Comment;
+            request.Updated = DateTime.Now;
+
+            request.RequestStatusId = reqstatus;
+            request.RequestStatus = null;
+
+
+            _courseRequestRepo.UpdateAsync(request);
+
+            return RedirectToAction(nameof(RequestList));
+
+        }
+
+
+        #endregion
 
         // GET: Course/Edit/5
         public async Task<IActionResult> Edit(Guid? id)

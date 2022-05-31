@@ -1,0 +1,90 @@
+﻿@model ElectronicJournal.Web.ViewModels.CourseRequestEditViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Заявка на курс № @Model.Id</h1>
+
+<h4>Описание</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditRequest" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group">
+                <label asp-for="Created" class="control-label">Дата создания:</label>
+                <input type="date" disabled asp-for="Created" class="form-control disabled" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Updated" class="control-label">Дата последнего обновления:</label>
+                <input type="date" disabled asp-for="Updated" class="form-control disabled" />
+            </div>
+            <div class="form-group">
+                <label asp-for="RequestStatus.Name" class="control-label">Текущий статус</label>
+                <label asp-for="RequestStatus.Name" class="form-control disabled">@Model.RequestStatus.Name</label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Course.Name" class="control-label">Название курса</label>
+                <input asp-for="Course.Name" disabled class="form-control disabled" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Course.Description" class="control-label">Описание курса</label>
+                <input asp-for="Course.Description" disabled class="form-control disabled" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Course.Type.Name" class="control-label">Тип курса</label>
+                <label asp-for="Course.Type.Name" class="form-control disabled">@Model.Course.Type.Name</label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Reason" class="control-label"></label>
+                <textarea asp-for="Reason" disabled class="form-control disabled">
+
+                </textarea>
+                <span asp-validation-for="Reason" class="text-danger"></span>
+            </div>
+            @if (Model.RequestStatusId == 2)
+            {
+                <div class="form-group">
+                    <label asp-for="Comment" class="control-label"></label>
+                    <textarea asp-for="Comment" class="form-control">
+
+                                            </textarea>
+                    <span asp-validation-for="Comment" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success btn-lg" name="action" value="4"> Одобрить</button>
+                    
+                </div>
+                <div class="form-group">
+                    <button type="submit"  class="btn btn-danger btn-lg" name="action" value="3"> Отклонить </button>
+                </div>
+                <div class="form-group">
+                    <button type="submit"  class="btn btn-primary" name="action" value="@Model.RequestStatusId"> Сохранить изменения </button>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label asp-for="Comment" class="control-label"></label>
+                    <textarea asp-for="Comment" disabled class="form-control">
+
+                                            </textarea>
+                    <span asp-validation-for="Comment" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <button type="submit"  class="btn btn-primary" name="action" value="@Model.RequestStatusId"> Обратно к заявкам </button>
+                </div>
+            }
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+}

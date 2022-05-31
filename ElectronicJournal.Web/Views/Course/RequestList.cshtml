@@ -1,0 +1,62 @@
+﻿@model ElectronicJournal.Web.ViewModels.ListCourseRequestsViewModel
+
+@{
+    ViewData["Title"] = "Заявки на обучение";
+}
+
+<h1>Мои заявки</h1>
+
+<p>
+    @if (!User.IsInRole("Liner"))
+    {
+        <a asp-action="CreateRequest" class="btn btn-primary" >Создать заявку</a>
+    }
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Номер заявки
+            </th>
+            <th>
+                От кого
+            </th>
+            <th>
+                Кому
+            </th>
+            <th>
+                Статус
+            </th>
+             <th>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Requests) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sender.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Principal.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequestStatus.Name)
+            </td>
+            <td>
+                    @if (!User.IsInRole("Liner"))
+                    {
+                        <a asp-action="DetailsRequest" class="btn btn-secondary" asp-route-id="@item.Id">Детали заявки</a>
+                    }
+                    else
+                    {
+                        <a asp-action="EditRequest" class="btn btn-secondary" asp-route-id="@item.Id">Редактировать</a>
+                    }
+                </td>
+        </tr>
+}
+    </tbody>
+</table>

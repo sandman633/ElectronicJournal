@@ -1,0 +1,145 @@
+﻿@page
+@model ElectronicJournal.Web.Pages.CourseEditModel
+@{
+}
+<div class="text-center">
+    <input type="hidden" asp-for="Course.Id" />
+
+    <div class="form-group">
+        <label asp-for="Course.Created" class="control-label">Дата создания:</label>
+        <input type="date" disabled asp-for="Course.Created" class="form-control disabled" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Course.Updated" class="control-label">Дата последнего обновления:</label>
+        <input type="date" disabled asp-for="Course.Updated" class="form-control disabled" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Course.Name" class="control-label">Название курса</label>
+        <input asp-for="Course.Name" disabled class="form-control disabled" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Course.Description" class="control-label">Описание курса</label>
+        <input asp-for="Course.Description" disabled class="form-control disabled" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Course.Type.Name" class="control-label">Тип курса</label>
+        <label asp-for="Course.Type.Name" class="form-control disabled">@Model.Course.Type.Name</label>
+    </div>
+    @if (@Model.NotInCourseUsers.Any())
+    {
+        <div class="text-center">
+            <form asp-page-handler="AddUser" method="post">
+                <input type="search" list="datalistusers" id="searchid" name="userName" placeholder="Введите имя.." />
+                <input hidden id="courseid" name="courseid" value="@Model.Course.Id" />
+                <button type="submit" class="btn btn-primary">
+                    Добавить
+                </button>
+                <datalist id="datalistusers">
+                    @foreach (var user in @Model.NotInCourseUsers)
+                    {
+                        <option>@user.Name</option>
+                    }
+                </datalist>
+            </form>
+        </div>
+    }
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Сотрудник</th>
+                <th class="text-right">Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var userCourse in Model.Users)
+            {
+                <tr>
+                    <td class="text-center">@userCourse.UserId</td>
+                    <td class="text-left">@userCourse.User.Name</td>
+                    <td class="text-right">@userCourse.Status.StatusName</td>
+                    <td class="text-center">
+                        <form asp-page-handler="Remove" method="post">
+                            <input type="hidden" name="userId" value="@userCourse.UserId" />
+                            <input hidden id="courseid" name="courseid" value="@Model.Course.Id" />
+                            <button type="submit" class="btn small btn-danger">
+                                Удалить
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-around">
+        @if (Model.usersPagingInfo.CurrentPage != 1)
+        {
+            <form asp-page-handler="Users" method="post">
+                <input type="hidden" name="currentPageUsers" value="@Model.usersPagingInfo.PreviousPage" />
+                <input type="hidden" name="courseId" value="@Model.Course.Id" />
+                <button type="submit" class="btn small btn-primary">
+                    Предыдущая страница
+                </button>
+            </form>
+        }
+        @if (Model.usersPagingInfo.CurrentPage < Model.usersPagingInfo.TotalPages)
+        {
+            <form asp-page-handler="Users" method="post">
+                <input type="hidden" name="currentPageUsers" value="@Model.usersPagingInfo.NextPage" />
+                <input type="hidden" name="courseId" value="@Model.Course.Id" />
+                <button type="submit" class="btn small btn-primary">
+                    Следующая страница
+                </button>
+            </form>
+        }
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Группа</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var userGroup in Model.Groups)
+            {
+                <tr>
+                    <td class="text-center">@userGroup.Id</td>
+                    <td class="text-left">@userGroup.Name</td>
+                    <td class="text-center">
+                        <form asp-page-handler="Remove" method="post">
+                            <input type="hidden" name="groupId" value="@userGroup.Id" />
+                            <input hidden id="courseid" name="courseid" value="@Model.Course.Id" />
+                            <button type="submit" class="btn small btn-danger">
+                                Удалить
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-around">
+        @if (Model.groupsPagingInfo.CurrentPage != 1)
+        {
+            <form asp-page-handler="Groups" method="post">
+                <input type="hidden" name="currentPageGroups" value="@Model.groupsPagingInfo.PreviousPage" />
+                <input type="hidden" name="courseId" value="@Model.Course.Id" />
+                <button type="submit" class="btn small btn-primary">
+                    Предыдущая страница
+                </button>
+            </form>
+        }
+        @if (Model.groupsPagingInfo.CurrentPage < Model.groupsPagingInfo.TotalPages)
+        {
+            <form asp-page-handler="Groups" method="post">
+                <input type="hidden" name="currentPageGroups" value="@Model.groupsPagingInfo.NextPage" />
+                <input type="hidden" name="courseId" value="@Model.Course.Id" />
+                <button type="submit" class="btn small btn-primary">
+                    Следующая страница
+                </button>
+            </form>
+        }
+    </div>
+</div>

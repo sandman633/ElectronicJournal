@@ -1,0 +1,56 @@
+﻿@model ElectronicJournal.Web.ViewModels.CourseRequestViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Детали заявки № @Model.Request.Id</h1>
+
+<h4>Описание</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditRequest" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Request.Id" />
+
+            <div class="form-group">
+                <label asp-for="Request.Created" class="control-label">Дата создания:</label>
+                <input type="date" disabled asp-for="Request.Created" class="form-control disabled" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.Updated" class="control-label">Дата последнего обновления:</label>
+                <input type="date" disabled asp-for="Request.Updated" class="form-control disabled" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.Course.Name" class="control-label">Название курса</label>
+                <input asp-for="Request.Course.Name" disabled class="form-control disabled" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.Course.Description" class="control-label">Описание курса</label>
+                <input asp-for="Request.Course.Description" disabled class="form-control disabled" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.Course.Type.Name" class="control-label">Тип курса</label>
+                <label asp-for="Request.Course.Type.Name" class="form-control disabled">@Model.Request.Course.Type.Name</label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Request.Reason" class="control-label"></label>
+                <textarea asp-for="Request.Reason" disabled class="form-control disabled">
+
+                </textarea>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Request.Comment" class="control-label">Комментарий от руководителя:</label>
+                <textarea asp-for="Request.Comment" disabled class="form-control">
+
+                </textarea>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="RequestList">Обратно к заявкам</a>
+</div>

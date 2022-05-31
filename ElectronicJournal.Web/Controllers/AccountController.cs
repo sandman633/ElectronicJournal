@@ -14,14 +14,12 @@ namespace ElectronicJournal.Web.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IUserGroupRepository _userGroupRepository;
-        private readonly IGroupRepository _groupRepository;
 
         public AccountController(UserManager<User> userManager, SignInManager<User> signInManager,IUserGroupRepository userGroupRepository,IGroupRepository groupRepository )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _userGroupRepository = userGroupRepository;
-            _groupRepository = groupRepository;
         }
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
@@ -74,7 +72,6 @@ namespace ElectronicJournal.Web.Controllers
             foreach (var usergroup in usergroups)
             {
                 claims.Add(new Claim("Group", usergroup.Group.Name));
-                claims.Add(new Claim("Group", usergroup.Group.Name + "1"));
             }
             claims.Add(new Claim("Id", user.Id.ToString()));
             return claims;

@@ -30,14 +30,13 @@ namespace ElectronicJournal.Web
                 config.Password.RequireNonAlphanumeric = false;
                 config.Password.RequireUppercase = false;
             });
-            services.AddRazorPages();
-            services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")),ServiceLifetime.Transient);
 
             
             services.AddIdentity<User, IdentityRole<Guid>>()
                         .AddEntityFrameworkStores<ApplicationDbContext>();
             services.RepositoryConfiguration();
-
+            services.AddRazorPages();
             services.ConfigureApplicationCookie(options =>
             {
                 // Cookie settings
@@ -64,14 +63,14 @@ namespace ElectronicJournal.Web
 
             app.UseRouting();
 
-            app.UseAuthorization();
             app.UseAuthentication();
-
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Account}/{action=Login}/{id?}");
             });
         }
     }

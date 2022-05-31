@@ -4,14 +4,16 @@ using ElectronicJournal.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ElectronicJournal.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220516183937_fixreq")]
+    partial class fixreq
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,50 +54,6 @@ namespace ElectronicJournal.Web.Migrations
                     b.HasIndex("TypeId");
 
                     b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("ElectronicJournal.Web.Models.CourseRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CourseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("PrincipalId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RequestStatusId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("SenderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("PrincipalId");
-
-                    b.HasIndex("RequestStatusId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("CourseRequests");
                 });
 
             modelBuilder.Entity("ElectronicJournal.Web.Models.CourseStatus", b =>
@@ -437,42 +395,6 @@ namespace ElectronicJournal.Web.Migrations
                     b.Navigation("Type");
                 });
 
-            modelBuilder.Entity("ElectronicJournal.Web.Models.CourseRequest", b =>
-                {
-                    b.HasOne("ElectronicJournal.Web.Models.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ElectronicJournal.Web.Models.User", "Principal")
-                        .WithMany("UserCourseRequestsPrincipal")
-                        .HasForeignKey("PrincipalId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ElectronicJournal.Web.Models.RequestStatus", "RequestStatus")
-                        .WithMany("CourseRequests")
-                        .HasForeignKey("RequestStatusId")
-                        .HasPrincipalKey("RequestStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ElectronicJournal.Web.Models.User", "Sender")
-                        .WithMany("UserCourseRequestsSender")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Principal");
-
-                    b.Navigation("RequestStatus");
-
-                    b.Navigation("Sender");
-                });
-
             modelBuilder.Entity("ElectronicJournal.Web.Models.User", b =>
                 {
                     b.HasOne("ElectronicJournal.Web.Models.User", "Principal")
@@ -600,17 +522,8 @@ namespace ElectronicJournal.Web.Migrations
                     b.Navigation("UserGroups");
                 });
 
-            modelBuilder.Entity("ElectronicJournal.Web.Models.RequestStatus", b =>
-                {
-                    b.Navigation("CourseRequests");
-                });
-
             modelBuilder.Entity("ElectronicJournal.Web.Models.User", b =>
                 {
-                    b.Navigation("UserCourseRequestsPrincipal");
-
-                    b.Navigation("UserCourseRequestsSender");
-
                     b.Navigation("UserCourses");
 
                     b.Navigation("UserGroups");
